@@ -32,7 +32,7 @@ public class DisplayGraphics extends Canvas{
         //Setup Main GUI
         JFrame f=new JFrame("LSystems - K. Uerkwitz");
         f.add(m);
-        f.setSize(500,400);
+        f.setSize(1600,900);
 
         //Centering the window on screen, then displaying
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -40,7 +40,7 @@ public class DisplayGraphics extends Canvas{
         f.setVisible(true);
 
         // Setup Favicon for GUI Window
-        final String faviconPath = "src/com/kuerkwitz/Lsystem/resources/favicon.png";
+        final String faviconPath = "src/com/kuerkwitz/Lsystem/resources/favicon_.png";
         final ImageIcon faviconIcon = new ImageIcon(faviconPath);
         final Image favicon = faviconIcon.getImage();
         f.setIconImage(favicon);
