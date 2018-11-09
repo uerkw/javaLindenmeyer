@@ -4,19 +4,23 @@ package com.kuerkwitz.Lsystem.UI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
+import java.awt.geom.Line2D;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 
 public class Project2GUI extends JFrame implements ActionListener {
 
-    JTextField lhs[], rhs[], angle, startSymbol;
-    JButton drawButton;
-    JSpinner iterationSpinner;
-    JLabel ruleLabels[], angleLabel, startLabel, spinnerLabel, iterationsLabel;
-    ButtonGroup rootSelection;
-    JRadioButton drawRootBottom, drawRootCorner, drawRootCenter;
-    DisplayGraphics canvasPanel;
+    private JTextField lhs[], rhs[], angle, startSymbol, initialAngle, lineLength;
+    private JButton drawButton;
+    private JSpinner iterationSpinner;
+    private JLabel ruleLabels[], angleLabel, initialAngleLabel, startLabel, iterationsLabel, lineLengthLabel;
+    private ButtonGroup rootSelection;
+    private JRadioButton drawRootBottom, drawRootCorner, drawRootCenter;
+    private DisplayGraphics canvasPanel;
+    static List<Line2D.Double> drawingLines;
     static int rootX;
     static int rootY;
 
@@ -47,12 +51,18 @@ public class Project2GUI extends JFrame implements ActionListener {
         rootSelection.add(drawRootBottom = new JRadioButton("Bottom"));
         rootSelection.add(drawRootCenter = new JRadioButton("Center"));
         rootSelection.add(drawRootCorner = new JRadioButton("Corner"));
+
             //Labels and Buttons
+        initialAngleLabel = new JLabel ("Initial Angle: ");
+        initialAngle = new JTextField(4);
+        lineLengthLabel = new JLabel ("Line Length ");
+        lineLength = new JTextField(4);
         angleLabel = new JLabel ("Angle: ");
         angle = new JTextField (4);
         startLabel = new JLabel ("Start Symbol: ");
         startSymbol = new JTextField(2);
         drawButton = new JButton ("Draw");
+
             //Iterations Spinner
         iterationsLabel = new JLabel("Iterations: ");
         iterationSpinner = new JSpinner(new SpinnerNumberModel(1,1,10,1));
@@ -67,12 +77,16 @@ public class Project2GUI extends JFrame implements ActionListener {
         canvasPanel.setBorder(new LineBorder(Color.BLACK));
 
         //Setup Button and Rules Pane
-        ButtonsPane.setPreferredSize(new Dimension(550, 30));
-        ButtonsPane.setMaximumSize(new Dimension(550, 50));
+        ButtonsPane.setPreferredSize(new Dimension(900, 30));
+        ButtonsPane.setMaximumSize(new Dimension(900, 50));
         RulesPane.setPreferredSize(new Dimension(900, 30));
         RulesPane.setMaximumSize(new Dimension(900, 50));
 
         //Add Buttons and Features to panes
+        ButtonsPane.add(initialAngleLabel);
+        ButtonsPane.add(initialAngle);
+        ButtonsPane.add(lineLengthLabel);
+        ButtonsPane.add(lineLength);
         ButtonsPane.add(drawRootBottom);
         ButtonsPane.add(drawRootCenter);
         ButtonsPane.add(drawRootCorner);
@@ -104,19 +118,13 @@ public class Project2GUI extends JFrame implements ActionListener {
         ourGUI.add(DrawPane);
         ourGUI.add(ButtonsPane);
 
-
-        rootX = 900/2;
-        rootY = 750;
         return ourGUI;
     }
 
-    public void actionPerformed(ActionEvent arg0) {
-        //TODO flesh out action listener to invoke the drawing process
-        errorDialog("Something is supposed to happen here.");
-    }
     private void errorDialog(String message){
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
+
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -126,7 +134,6 @@ public class Project2GUI extends JFrame implements ActionListener {
         } catch (UnsupportedLookAndFeelException e) {
             System.err.println("Can't use the specified look and feel on this platform.");
             System.err.println("Using the default look and feel.");
-            e.printStackTrace();
         } catch(InstantiationException e){
             System.err.println("Could not instantiate the look and feel");
             System.err.println("Using the default look and feel.");
@@ -137,4 +144,44 @@ public class Project2GUI extends JFrame implements ActionListener {
         Project2GUI project2 = new Project2GUI();
     }
 
+    public String expandRule(String initialString, int iterations, List<RuleSet> rules){
+        return("Hello");
+    }
+
+    public void actionPerformed(ActionEvent arg0) {
+        // Get the Angle value from UI
+        String angleText = angle.getText();
+        double angle;
+        try {
+            angle = Double.parseDouble(angleText);
+            System.out.println(angle);
+        } catch (NumberFormatException e) {
+            errorDialog("Angle field must be a decimal formatted number.");
+            return;
+        }
+
+        // Get the Initial Angle value
+        double initialAngleValue;
+        try {
+            initialAngleValue = Double.parseDouble(initialAngle.getText());
+        } catch (NumberFormatException e) {
+            errorDialog("Initial angle field must be a decimal.");
+            return;
+        }
+
+        //TODO Remove test Line2Ds
+//        drawingLines = new ArrayList<>();
+//        for(int i = 0; i < 1000; i++){
+//            drawingLines.add(new Line2D.Double(i*5-700, -i, (Math.pow((i),2)-45), (Math.pow((i),1.987)-100)));
+//
+//        }
+
+        // Redraw the canvas after calculating all lines
+        rootX = 450;
+        rootY = 750;
+        canvasPanel.repaint();
+
+        //TODO Remove testing Option Message
+        errorDialog("The Draw Button Works.");
+    }
 }

@@ -11,16 +11,21 @@ public class DisplayGraphics extends JPanel {
 
     @Override
     public void paint(Graphics g){
+
         super.paint(g);
         Graphics2D g2 = (Graphics2D)g;
 
+        // Initial Values
         g2.setColor(Color.black);
         g2.translate(Project2GUI.rootX, Project2GUI.rootY);
-        Line2D line = new Line2D.Double(0,0,399,-399);
-        g2.draw(line);
-        line = new Line2D.Double(0,-399,399,0);
-        g2.draw(line);
+
+        // Loop through and draw every line
+        if(Project2GUI.drawingLines != null) for(Line2D.Double line : Project2GUI.drawingLines){
+            g2.draw(line);
+        }
+
+        //TODO Remove test:
         g2.setFont(new Font("Arial", Font.PLAIN, 20));
-        g2.drawString("Test", 0,-100);
+        g2.drawString("Test", 0,0);
     }
 }
