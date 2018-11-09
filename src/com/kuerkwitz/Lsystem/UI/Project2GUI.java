@@ -1,5 +1,6 @@
 package com.kuerkwitz.Lsystem.UI;
 
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
@@ -9,13 +10,15 @@ import javax.swing.border.LineBorder;
 
 public class Project2GUI extends JFrame implements ActionListener {
 
-    protected JTextField lhs[], rhs[], angle, startSymbol;
-    protected JButton drawButton;
-    protected JSpinner iterationSpinner;
-    protected JLabel ruleLabels[], angleLabel, startLabel, spinnerLabel, iterationsLabel;
-    protected DisplayGraphics canvasPanel;
-    protected static int rootX;
-    protected static int rootY;
+    JTextField lhs[], rhs[], angle, startSymbol;
+    JButton drawButton;
+    JSpinner iterationSpinner;
+    JLabel ruleLabels[], angleLabel, startLabel, spinnerLabel, iterationsLabel;
+    ButtonGroup rootSelection;
+    JRadioButton drawRootBottom, drawRootCorner, drawRootCenter;
+    DisplayGraphics canvasPanel;
+    static int rootX;
+    static int rootY;
 
     public Project2GUI () {
         this.setTitle("L-Systems, K. Uerkwitz");
@@ -39,23 +42,29 @@ public class Project2GUI extends JFrame implements ActionListener {
         ourGUI.setLayout(layoutManager);
 
         //Create Buttons and Fields
+            //Radio Buttons:
+        rootSelection = new ButtonGroup();
+        rootSelection.add(drawRootBottom = new JRadioButton("Bottom"));
+        rootSelection.add(drawRootCenter = new JRadioButton("Center"));
+        rootSelection.add(drawRootCorner = new JRadioButton("Corner"));
+            //Labels and Buttons
         angleLabel = new JLabel ("Angle: ");
         angle = new JTextField (4);
         startLabel = new JLabel ("Start Symbol: ");
         startSymbol = new JTextField(2);
         drawButton = new JButton ("Draw");
+            //Iterations Spinner
         iterationsLabel = new JLabel("Iterations: ");
-        SpinnerNumberModel spinNumModel = new SpinnerNumberModel(1,1,10,1);
-        iterationSpinner = new JSpinner(spinNumModel);
+        iterationSpinner = new JSpinner(new SpinnerNumberModel(1,1,10,1));
 
         //Create Button Listener
-        drawButton.addActionListener(new DrawClickListener());
+        drawButton.addActionListener(this);
 
         //Setup Canvas to use, uses DisplayGraphics class
         canvasPanel = new DisplayGraphics();
-        canvasPanel.setBackground(Color.black);
+        canvasPanel.setBackground(Color.white);
         canvasPanel.setPreferredSize(new Dimension(900, 750));
-        canvasPanel.setBorder(new LineBorder(Color.white));
+        canvasPanel.setBorder(new LineBorder(Color.BLACK));
 
         //Setup Button and Rules Pane
         ButtonsPane.setPreferredSize(new Dimension(550, 30));
@@ -64,6 +73,9 @@ public class Project2GUI extends JFrame implements ActionListener {
         RulesPane.setMaximumSize(new Dimension(900, 50));
 
         //Add Buttons and Features to panes
+        ButtonsPane.add(drawRootBottom);
+        ButtonsPane.add(drawRootCenter);
+        ButtonsPane.add(drawRootCorner);
         ButtonsPane.add(angleLabel);
         ButtonsPane.add(angle);
         ButtonsPane.add(startLabel);
@@ -88,9 +100,9 @@ public class Project2GUI extends JFrame implements ActionListener {
             rhs[i] = new JTextField(10);
             RulesPane.add(rhs[i]);
         }
-        ourGUI.add(ButtonsPane);
         ourGUI.add(RulesPane);
         ourGUI.add(DrawPane);
+        ourGUI.add(ButtonsPane);
 
 
         rootX = 900/2;
@@ -99,9 +111,12 @@ public class Project2GUI extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent arg0) {
-
+        //TODO flesh out action listener to invoke the drawing process
+        errorDialog("Something is supposed to happen here.");
     }
-
+    private void errorDialog(String message){
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -121,7 +136,5 @@ public class Project2GUI extends JFrame implements ActionListener {
         }
         Project2GUI project2 = new Project2GUI();
     }
-    private void errorDialog(String message){
-        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-    }
+
 }
