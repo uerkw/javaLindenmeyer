@@ -1,30 +1,41 @@
 package com.kuerkwitz.Lsystem.UI;
 
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+
+/**
+ * @author Kyle Uerkwitz
+ */
 
 
 public class Project2GUI extends JFrame implements ActionListener {
 
-    private JTextField lhs[], rhs[], angle, startSymbol, initialAngle, lineLength;
-    private JButton drawButton;
+    private JTextField angle, startSymbol, initialAngle, lineLength;
+    private JTextArea rulesField;
+    private JButton drawButton, clearButton;
     private JSpinner iterationSpinner;
-    private JLabel ruleLabels[], angleLabel, initialAngleLabel, startLabel, iterationsLabel, lineLengthLabel;
+    private JLabel angleLabel, initialAngleLabel, startLabel, iterationsLabel, lineLengthLabel, rulesLabel;
     private ButtonGroup rootSelection;
     private JRadioButton drawRootBottom, drawRootCorner, drawRootCenter;
+    static JCheckBox colorsCheckBox;
     private DisplayGraphics canvasPanel;
     static List<Line2D.Double> drawingLines;
-    static int rootX = 0;
+    static List<Byte> drawingColors;
+    static int rootX = 450;
     static int rootY = 750;
 
     public Project2GUI () {
+        //Declare drawing lines to use
+        drawingLines = new ArrayList<>();
+        drawingColors = new ArrayList<>();
+        //Initialize Window
         this.setTitle("L-Systems, K. Uerkwitz");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.add(buildGUI());
@@ -38,12 +49,19 @@ public class Project2GUI extends JFrame implements ActionListener {
 
         //Create Element JPanels
         JPanel ButtonsPane = new JPanel();
-        JPanel RulesPane = new JPanel();
-        JPanel DrawPane = new JPanel();
+        JPanel RightMasterPane = new JPanel();
+        JPanel LeftMasterPane = new JPanel();
 
-        //Setup Layout Manager
-        BoxLayout layoutManager = new BoxLayout(masterGUI, BoxLayout.Y_AXIS);
-        masterGUI.setLayout(layoutManager);
+        // Setup Layout Managers
+        BorderLayout masterLayoutManager = new BorderLayout(3, 0);
+        masterGUI.setLayout(masterLayoutManager);
+        // Layout Manager for Right Hand Side
+        BoxLayout layoutManagerRight = new BoxLayout(RightMasterPane, BoxLayout.Y_AXIS);
+        RightMasterPane.setLayout(layoutManagerRight);
+        // Layout Manager for Left Hand Side
+        BorderLayout layoutManagerLeft = new BorderLayout(0, 10);
+        LeftMasterPane.setLayout(layoutManagerLeft);
+
 
         //Create Buttons and Fields
             //Radio Buttons:
@@ -62,13 +80,14 @@ public class Project2GUI extends JFrame implements ActionListener {
         startLabel = new JLabel ("Start Symbol: ");
         startSymbol = new JTextField(2);
         drawButton = new JButton ("Draw");
+        clearButton = new JButton("Clear");
+        rulesField = new JTextArea(6, 8);
+        rulesLabel = new JLabel("Rules: ");
 
             //Iterations Spinner
         iterationsLabel = new JLabel("Iterations: ");
-        iterationSpinner = new JSpinner(new SpinnerNumberModel(1,1,10,1));
+        iterationSpinner = new JSpinner(new SpinnerNumberModel(1,1,100,1));
 
-        //Create Button Listener
-        drawButton.addActionListener(this);
 
         //Setup Canvas to use, uses DisplayGraphics class
         canvasPanel = new DisplayGraphics();
@@ -76,13 +95,19 @@ public class Project2GUI extends JFrame implements ActionListener {
         canvasPanel.setPreferredSize(new Dimension(900, 750));
         canvasPanel.setBorder(new LineBorder(Color.BLACK));
 
+        //Create Button Listeners
+        drawButton.addActionListener(this);
+        clearButton.addActionListener(new ClearClickListener(canvasPanel));
+
         //Setup Button and Rules Pane
         ButtonsPane.setPreferredSize(new Dimension(900, 30));
         ButtonsPane.setMaximumSize(new Dimension(900, 50));
-        RulesPane.setPreferredSize(new Dimension(900, 30));
-        RulesPane.setMaximumSize(new Dimension(900, 50));
+        rulesLabel.setPreferredSize(new Dimension(100, 30));
+        LeftMasterPane.setPreferredSize(new Dimension(150, 200));
+        LeftMasterPane.setMaximumSize(new Dimension(150, 200));
 
-        //Add Buttons and Features to panes
+
+        //Add Buttons and Features to Button Pane
         ButtonsPane.add(initialAngleLabel);
         ButtonsPane.add(initialAngle);
         ButtonsPane.add(lineLengthLabel);
@@ -97,30 +122,41 @@ public class Project2GUI extends JFrame implements ActionListener {
         ButtonsPane.add(iterationsLabel);
         ButtonsPane.add(iterationSpinner);
         ButtonsPane.add(drawButton);
+        ButtonsPane.add(clearButton);
 
-        DrawPane.add(canvasPanel);
-        //Populate the Rules bar
-        lhs = new JTextField[5];
-        rhs = new JTextField[5];
-        ruleLabels = new JLabel[5];
+        // Content Setup for Rules Panel
+        Box.Filler filler1 = new Box.Filler(new Dimension(150, 320),
+                                            new Dimension(150, 320),
+                                            new Dimension(150,320));
+        Box.Filler filler2 = new Box.Filler(new Dimension(150, 300),
+                                            new Dimension(150, 300),
+                                            new Dimension(150,300));
 
-        for (int i = 0; i < 5; i++) {
-            ruleLabels[i] = new JLabel("Rule "+i+" : ");
-            RulesPane.add(ruleLabels[i]);
-            lhs[i] = new JTextField(2);
-            RulesPane.add(lhs[i]);
-            rhs[i] = new JTextField(10);
-            RulesPane.add(rhs[i]);
-        }
+        JPanel rulesContentPanel = new JPanel();
+        colorsCheckBox = new JCheckBox("Use Colors?");
 
-        masterGUI.add(RulesPane);
-        masterGUI.add(DrawPane);
-        masterGUI.add(ButtonsPane);
+        BorderLayout rulesContentManager = new BorderLayout();
+        rulesField.setPreferredSize(new Dimension(150, 100));
+        rulesContentPanel.setLayout(rulesContentManager);
+        rulesContentPanel.add(rulesLabel, rulesContentManager.PAGE_START);
+        rulesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        rulesContentPanel.add(rulesField, rulesContentManager.CENTER);
+        rulesContentPanel.add(colorsCheckBox, rulesContentManager.PAGE_END);
+        rulesField.setBorder(new LineBorder(Color.BLACK));
+        LeftMasterPane.add(filler1, layoutManagerLeft.NORTH);
+        LeftMasterPane.add(rulesContentPanel, layoutManagerLeft.CENTER);
+        LeftMasterPane.add(filler2, layoutManagerLeft.SOUTH);
+
+
+        masterGUI.add(LeftMasterPane, masterLayoutManager.WEST);
+        RightMasterPane.add(canvasPanel);
+        RightMasterPane.add(ButtonsPane);
+        masterGUI.add(RightMasterPane, masterLayoutManager.EAST);
 
         return masterGUI;
     }
 
-    private void errorDialog(String message){
+    private static void errorDialog(String message){
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
@@ -140,11 +176,85 @@ public class Project2GUI extends JFrame implements ActionListener {
             System.err.println("Illegal access to look and feel.");
             System.err.println("Using the default look and feel.");
         }
-        Project2GUI project2 = new Project2GUI();
+        Project2GUI GUIBuild = new Project2GUI();
     }
 
     private String expandRule(String initialString, int iterations, List<RuleSet> rules){
-        return("Hello");
+
+        for(int i = 0; i < iterations; i++){
+            StringBuilder finalExpansion = new StringBuilder();
+
+            try {
+            mainLoop:
+            for(int j = 0; j < initialString.length(); j++){
+                char currentSymbol = initialString.charAt(j);
+                for(RuleSet rule : rules) {
+                    if (rule.getVariable() == currentSymbol) {
+                        finalExpansion.append(rule.getRules());
+                        continue mainLoop;
+                    }
+                }
+
+                if (currentSymbol != 'F' && currentSymbol != '+' && currentSymbol != '-' && currentSymbol != '['
+                        && currentSymbol != ']'){
+                    errorDialog("Expansion error. Start value or rules contain an undefined variable.");
+                    return null;
+                }
+                    finalExpansion.append(currentSymbol);
+                }
+            } catch(OutOfMemoryError outOfMemoryError){
+                // Handle if the user inputs too many iterations and the heap space limit is reached
+            finalExpansion = null;
+            errorDialog("Java could not allocate enough heap space to the expansion task. \n Please reduce " +
+                    "the iterations and try again.");
+                return null;
+            }
+            initialString = finalExpansion.toString();
+        }
+        return initialString;
+    }
+
+    private void createLines(String expanded, double angle, double initAngle, double lineSize) throws OutOfMemoryError{
+        //Clear any old lines from list
+        drawingLines.clear();
+        drawingColors.clear();
+
+        //Starting values
+        double posX = 0;
+        double posY = 0;
+        double currentAngle = initAngle;
+        byte colorValue = 0;
+
+        //Make a stack of position holding values
+        Stack<LineVector> posStack = new Stack<>();
+
+        //Iterate through every string value
+        for (int i = 0; i < expanded.length(); i++) {
+            char operation = expanded.charAt(i);
+
+            if(operation == '-') currentAngle += angle;
+            else if (operation == '+') currentAngle -= angle;
+            else if (operation == '[') {
+                posStack.push(new LineVector(posX, posY, currentAngle));
+                colorValue++;
+            }
+            else if (operation == ']') {
+                LineVector newDraw = posStack.pop();
+                posX = newDraw.getPosX();
+                posY = newDraw.getPosY();
+                currentAngle = newDraw.getAngle();
+                colorValue--;
+            }
+            else if (operation == 'F'){
+                double newXPos = posX + lineSize * Math.cos(Math.toRadians(currentAngle));
+                double newYPos = posY + lineSize * Math.sin(Math.toRadians(currentAngle));
+                drawingLines.add(new Line2D.Double(posX, -posY, newXPos, -newYPos));
+                drawingColors.add(colorValue);
+
+                posX = newXPos;
+                posY = newYPos;
+            }
+        }
     }
 
     public void actionPerformed(ActionEvent arg0) {
@@ -188,31 +298,64 @@ public class Project2GUI extends JFrame implements ActionListener {
 
         // Get the origin start from the radio buttons,
         //TODO Possible Window Resizing
-        rootX = drawRootCorner.isSelected() ? 0   : 450;
-        rootY = drawRootCenter.isSelected() ? 325 : 749;
+        rootX = drawRootCorner.isSelected() ? 5   : 450;
+        rootY = drawRootCenter.isSelected() ? 375 : 745;
 
-        // Get the rules
-        ArrayList<String[]> ruleSets = getRuleSets();
+        // Get the rules, check there is at least one.
+        String rulesText = rulesField.getText();
+        if (rulesText.isEmpty()) {
+            errorDialog("The specified rules cannot be empty.");
+            return;
+        }
+
+        //Format the Rules
+        String[] rulesSplit = rulesText.split("\n");
+        List<RuleSet> rules = new ArrayList<>();
+
+        for (int i = 0; i < rulesSplit.length; i++) {
+            String rule = rulesSplit[i];
+            int equalsSign = rule.indexOf("=");
+            if (equalsSign == -1) {
+                errorDialog("Rule " + (i + 1) + " does not assign a rule");
+                return;
+            }
+            String variable = rule.substring(0, equalsSign);
+
+            if (variable.length() != 1) {
+                errorDialog("Starting variable in rule" + (i + 1) + " must be 1 character.");
+                return;
+            }
+
+            String value = rule.substring(equalsSign + 1);
+            rules.add(new RuleSet(variable.charAt(0), value));
+        }
 
         // Expand the String
-        //expandRule(String[])
+        String expansion = expandRule(startSymbolValue, iterationsValue, rules);
 
-        // Make the Lines
-        //TODO line add method
+        if (expansion != null) {
+            try{
+                createLines(expansion, angle, initialAngleValue, lineLengthValue);
+            } catch (OutOfMemoryError OoME){
+                errorDialog("Java could not allocate enough heap space to creating the\n" +
+                        "lines of the given L-system. Please reduce iterations\n" +
+                        "and try again.");
+            }
+        }
+
+        // Repaint the canvas
         canvasPanel.repaint();
 
+        //Empty Memory values to prevent problems
+        expansion = null;
 
-        //TODO Remove testing Option Message
-        JOptionPane.showMessageDialog(null, "The Draw Button Works.", "Success",
-                JOptionPane.INFORMATION_MESSAGE);
     }
+
     private ArrayList<String[]> getRuleSets(){
         ArrayList<String[]> finalRules = new ArrayList<>();
         for(int i = 0; i < 5; i++){
             String[] tempRules = new String[2];
-            tempRules[0] = lhs[i].getText();
-            tempRules[1] = rhs[i].getText();
-            finalRules.add(tempRules);
+
         }
         return finalRules;
     }
