@@ -21,8 +21,8 @@ public class Project2GUI extends JFrame implements ActionListener {
     private JRadioButton drawRootBottom, drawRootCorner, drawRootCenter;
     private DisplayGraphics canvasPanel;
     static List<Line2D.Double> drawingLines;
-    static int rootX;
-    static int rootY;
+    static int rootX = 0;
+    static int rootY = 750;
 
     public Project2GUI () {
         this.setTitle("L-Systems, K. Uerkwitz");
@@ -34,7 +34,7 @@ public class Project2GUI extends JFrame implements ActionListener {
 
     private JPanel buildGUI() {
         // Create Master JPanel
-        JPanel ourGUI = new JPanel();
+        JPanel masterGUI = new JPanel();
 
         //Create Element JPanels
         JPanel ButtonsPane = new JPanel();
@@ -42,8 +42,8 @@ public class Project2GUI extends JFrame implements ActionListener {
         JPanel DrawPane = new JPanel();
 
         //Setup Layout Manager
-        BoxLayout layoutManager = new BoxLayout(ourGUI, BoxLayout.Y_AXIS);
-        ourGUI.setLayout(layoutManager);
+        BoxLayout layoutManager = new BoxLayout(masterGUI, BoxLayout.Y_AXIS);
+        masterGUI.setLayout(layoutManager);
 
         //Create Buttons and Fields
             //Radio Buttons:
@@ -98,9 +98,7 @@ public class Project2GUI extends JFrame implements ActionListener {
         ButtonsPane.add(iterationSpinner);
         ButtonsPane.add(drawButton);
 
-
         DrawPane.add(canvasPanel);
-
         //Populate the Rules bar
         lhs = new JTextField[5];
         rhs = new JTextField[5];
@@ -114,11 +112,12 @@ public class Project2GUI extends JFrame implements ActionListener {
             rhs[i] = new JTextField(10);
             RulesPane.add(rhs[i]);
         }
-        ourGUI.add(RulesPane);
-        ourGUI.add(DrawPane);
-        ourGUI.add(ButtonsPane);
 
-        return ourGUI;
+        masterGUI.add(RulesPane);
+        masterGUI.add(DrawPane);
+        masterGUI.add(ButtonsPane);
+
+        return masterGUI;
     }
 
     private void errorDialog(String message){
@@ -144,19 +143,27 @@ public class Project2GUI extends JFrame implements ActionListener {
         Project2GUI project2 = new Project2GUI();
     }
 
-    public String expandRule(String initialString, int iterations, List<RuleSet> rules){
+    private String expandRule(String initialString, int iterations, List<RuleSet> rules){
         return("Hello");
     }
 
     public void actionPerformed(ActionEvent arg0) {
+
         // Get the Angle value from UI
         String angleText = angle.getText();
         double angle;
         try {
             angle = Double.parseDouble(angleText);
-            System.out.println(angle);
         } catch (NumberFormatException e) {
             errorDialog("Angle field must be a decimal formatted number.");
+            return;
+        }
+        // Get the Line Length value
+        double lineLengthValue;
+        try {
+            lineLengthValue = Double.parseDouble(lineLength.getText());
+        } catch (NumberFormatException e) {
+            errorDialog("Line length field must be a decimal formatted number.");
             return;
         }
 
@@ -165,23 +172,48 @@ public class Project2GUI extends JFrame implements ActionListener {
         try {
             initialAngleValue = Double.parseDouble(initialAngle.getText());
         } catch (NumberFormatException e) {
-            errorDialog("Initial angle field must be a decimal.");
+            errorDialog("Initial angle field must be a decimal formatted number.");
+            return;
+        }
+        // Get the Initial Angle value
+        int iterationsValue;
+        iterationsValue = (int)iterationSpinner.getValue();
+
+        // Get the Start Symbol Value
+        String startSymbolValue = startSymbol.getText();
+        if (startSymbolValue.isEmpty()) {
+            errorDialog("Start symbol cannot be empty.");
             return;
         }
 
-        //TODO Remove test Line2Ds
-//        drawingLines = new ArrayList<>();
-//        for(int i = 0; i < 1000; i++){
-//            drawingLines.add(new Line2D.Double(i*5-700, -i, (Math.pow((i),2)-45), (Math.pow((i),1.987)-100)));
-//
-//        }
+        // Get the origin start from the radio buttons,
+        //TODO Possible Window Resizing
+        rootX = drawRootCorner.isSelected() ? 0   : 450;
+        rootY = drawRootCenter.isSelected() ? 325 : 749;
 
-        // Redraw the canvas after calculating all lines
-        rootX = 450;
-        rootY = 750;
+        // Get the rules
+        ArrayList<String[]> ruleSets = getRuleSets();
+
+        // Expand the String
+        //expandRule(String[])
+
+        // Make the Lines
+        //TODO line add method
         canvasPanel.repaint();
 
+
         //TODO Remove testing Option Message
-        errorDialog("The Draw Button Works.");
+        JOptionPane.showMessageDialog(null, "The Draw Button Works.", "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+    private ArrayList<String[]> getRuleSets(){
+        ArrayList<String[]> finalRules = new ArrayList<>();
+        for(int i = 0; i < 5; i++){
+            String[] tempRules = new String[2];
+            tempRules[0] = lhs[i].getText();
+            tempRules[1] = rhs[i].getText();
+            finalRules.add(tempRules);
+        }
+        return finalRules;
     }
 }
