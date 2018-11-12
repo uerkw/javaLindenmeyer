@@ -14,7 +14,7 @@ public class ClearClickListener implements ActionListener {
         Project2GUI.drawingLines.clear();
         Project2GUI.drawingColors.clear();
         canvas.repaint();
-
+        System.gc();
         /*JOptionPane.showMessageDialog(null,
                 "Canvas has been cleared.",
                 "Clear Button Clicked",

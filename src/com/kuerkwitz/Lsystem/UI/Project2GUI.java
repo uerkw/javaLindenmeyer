@@ -31,7 +31,8 @@ public class Project2GUI extends JFrame implements ActionListener {
     static int rootX = 450;
     static int rootY = 750;
 
-    public Project2GUI () {
+
+    private Project2GUI () {
         //Declare drawing lines to use
         drawingLines = new ArrayList<>();
         drawingColors = new ArrayList<>();
@@ -348,15 +349,6 @@ public class Project2GUI extends JFrame implements ActionListener {
 
         //Empty Memory values to prevent problems
         expansion = null;
-
-    }
-
-    private ArrayList<String[]> getRuleSets(){
-        ArrayList<String[]> finalRules = new ArrayList<>();
-        for(int i = 0; i < 5; i++){
-            String[] tempRules = new String[2];
-
-        }
-        return finalRules;
+        System.gc();
     }
 }
