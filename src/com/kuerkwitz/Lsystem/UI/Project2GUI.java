@@ -41,6 +41,7 @@ public class Project2GUI extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.add(buildGUI());
         this.pack();
+        this.setResizable(false);
         this.setVisible(true);
     }
 
@@ -233,8 +234,8 @@ public class Project2GUI extends JFrame implements ActionListener {
         for (int i = 0; i < expanded.length(); i++) {
             char operation = expanded.charAt(i);
 
-            if(operation == '-') currentAngle += angle;
-            else if (operation == '+') currentAngle -= angle;
+            if(operation == '-') currentAngle -= angle;
+            else if (operation == '+') currentAngle += angle;
             else if (operation == '[') {
                 posStack.push(new LineVector(posX, posY, currentAngle));
                 colorValue++;
@@ -259,6 +260,11 @@ public class Project2GUI extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent arg0) {
+        //Empty Memory values to prevent problems
+        if(drawingLines != null) {
+            Project2GUI.drawingLines.clear();
+            Project2GUI.drawingColors.clear();
+        }
 
         // Get the Angle value from UI
         String angleText = angle.getText();

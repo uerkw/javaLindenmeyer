@@ -44,10 +44,5 @@ public class DisplayGraphics extends JPanel {
                 i++;
             }
         }
-        //Empty Memory values to prevent problems
-        if(drawingLines != null) {
-            Project2GUI.drawingLines.clear();
-            Project2GUI.drawingColors.clear();
-        }
     }
 }
