@@ -1,5 +1,10 @@
 package com.kuerkwitz.Lsystem.UI;
 
+/**
+ * @author Kyle Uerkwitz
+ * Takes the position values and angle of a point to keep track of a vector
+ * in 2D Space
+ */
 class LineVector {
 
     private final double posX;

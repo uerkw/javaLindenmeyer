@@ -1,5 +1,10 @@
 package com.kuerkwitz.Lsystem.UI;
 
+/**
+ * @author Kyle Uerkwitz
+ * Takes a given variable and associated rules to easily store a string of values
+ * for easy access to user desired inputs.
+ */
 class RuleSet {
 
     private char variable;
