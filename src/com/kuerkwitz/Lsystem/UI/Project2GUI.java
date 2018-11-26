@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import javax.swing.*;
@@ -12,6 +13,8 @@ import javax.swing.border.LineBorder;
 
 /**
  * @author Kyle Uerkwitz
+ * The Main class for the GUI. This class contains the setup for the user interface,
+ * creating the rule for the system to use, and the action listener for the draw buttom.
  */
 
 
@@ -31,7 +34,10 @@ public class Project2GUI extends JFrame implements ActionListener {
     static int rootX = 450;
     static int rootY = 750;
 
-
+    /**
+     * The constructor for the GUI window. Sets up some values and configures
+     * the window by calling this.add( buildGUI() );
+     */
     private Project2GUI () {
         //Declare drawing lines to use
         drawingLines = new ArrayList<>();
@@ -45,6 +51,10 @@ public class Project2GUI extends JFrame implements ActionListener {
         this.setVisible(true);
     }
 
+    /**
+     *
+     * @return
+     */
     private JPanel buildGUI() {
         // Create Master JPanel
         JPanel masterGUI = new JPanel();
@@ -181,10 +191,21 @@ public class Project2GUI extends JFrame implements ActionListener {
         Project2GUI GUIBuild = new Project2GUI();
     }
 
+    /**
+     * A method to expand an initial rule string based on the rules defined by
+     * user inputs.
+     * @param initialString     The starting point for the expansion of the program
+     * @param iterations        The number of times to expand the string
+     * @param rules             The rules provided for the program to follow and expand each variable by if needed
+     * @return                  The final queue used to provide instructions to the line construction.
+     */
     private String expandRule(String initialString, int iterations, List<RuleSet> rules){
 
+        //TODO implement Queue instead of StringBuilder.
+        // Add initial string to queue
+
         for(int i = 0; i < iterations; i++){
-            StringBuilder finalExpansion = new StringBuilder();
+            StringBuilder finalExpansion = new StringBuilder(); //TODO Not needed(?)
 
             try {
             mainLoop:
@@ -192,7 +213,7 @@ public class Project2GUI extends JFrame implements ActionListener {
                 char currentSymbol = initialString.charAt(j);
                 for(RuleSet rule : rules) {
                     if (rule.getVariable() == currentSymbol) {
-                        finalExpansion.append(rule.getRules());
+                        finalExpansion.append(rule.getRules()); //TODO Enqueue the rules
                         continue mainLoop;
                     }
                 }
@@ -202,20 +223,30 @@ public class Project2GUI extends JFrame implements ActionListener {
                     errorDialog("Expansion error. Start value or rules contain an undefined variable.");
                     return null;
                 }
-                    finalExpansion.append(currentSymbol);
+                    finalExpansion.append(currentSymbol);   //TODO Enqueue the currentSymbol
+                    //TODO Enqueue the '*' operator
                 }
             } catch(OutOfMemoryError outOfMemoryError){
-                // Handle if the user inputs too many iterations and the heap space limit is reached
+                // Handle if the user inputs too many iterations and the JAVA heap space limit is reached
             finalExpansion = null;
             errorDialog("Java could not allocate enough heap space to the expansion task. \n Please reduce " +
                     "the iterations and try again.");
                 return null;
             }
-            initialString = finalExpansion.toString();
+            initialString = finalExpansion.toString();      //TODO Don't return this value
         }
-        return initialString;
+        return initialString;   //TODO convert to queue for return.
     }
 
+    /**
+     *
+     * @param expanded              The expanded queue passed to calculate lines and angles
+     * @param angle                 The angle to move left or right by for each angle operator
+     * @param initAngle             The starting angle for the origin point of the lines drawn
+     * @param lineSize              The size to draw each line at. Used to calculate final point values.
+     * @throws OutOfMemoryError     Thrown when the Java heap space limit is reached, prevents errors from
+     *                              overloading the iterations possible for the system to handle.
+     */
     private void createLines(String expanded, double angle, double initAngle, double lineSize) throws OutOfMemoryError{
         //Clear any old lines from list
         drawingLines.clear();
@@ -230,7 +261,7 @@ public class Project2GUI extends JFrame implements ActionListener {
         //Make a stack of position holding values
         Stack<LineVector> posStack = new Stack<>();
 
-        //Iterate through every string value
+        //Iterate through every string value    //TODO convert to queue instead of string.
         for (int i = 0; i < expanded.length(); i++) {
             char operation = expanded.charAt(i);
 
@@ -259,6 +290,12 @@ public class Project2GUI extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * The event handler for the 'Draw' Button being clicked. This method performs the checking of fields and
+     * grabs the data to be used. Then, it calls the respective computation components and repaints the canvas so
+     * lines are displayed
+     * @param arg0  The actionEvent being created by the event of the Draw button click
+     */
     public void actionPerformed(ActionEvent arg0) {
         //Empty Memory values to prevent problems
         if(drawingLines != null) {
