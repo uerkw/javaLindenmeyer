@@ -286,26 +286,36 @@ public class Project2GUI extends JFrame implements ActionListener {
         //Make a stack of position holding values
         Stack<LineVector> posStack = new Stack<>();
 
-        //Iterate through every string value    //TODO convert to queue instead of string.
+        //Iterate through every string value
         for (int i = 0; i < expanded.length(); i++) {
+
             char operation = expanded.charAt(i);
 
             if(operation == '-') currentAngle -= angle;
+
             else if (operation == '+') currentAngle += angle;
+
             else if (operation == '[') {
                 posStack.push(new LineVector(posX, posY, currentAngle));
+
                 colorValue++;
             }
+
             else if (operation == ']') {
                 LineVector newDraw = posStack.pop();
+
                 posX = newDraw.getPosX();
                 posY = newDraw.getPosY();
                 currentAngle = newDraw.getAngle();
+
                 colorValue--;
             }
+
             else if (operation == 'F'){
                 double newXPos = posX + lineSize * Math.cos(Math.toRadians(currentAngle));
+
                 double newYPos = posY + lineSize * Math.sin(Math.toRadians(currentAngle));
+
                 drawingLines.add(new Line2D.Double(posX, -posY, newXPos, -newYPos));
                 drawingColors.add(colorValue);
 
@@ -337,6 +347,7 @@ public class Project2GUI extends JFrame implements ActionListener {
             errorDialog("Angle field must be a decimal formatted number.");
             return;
         }
+
         // Get the Line Length value
         double lineLengthValue;
         try {
@@ -354,7 +365,8 @@ public class Project2GUI extends JFrame implements ActionListener {
             errorDialog("Initial angle field must be a decimal formatted number.");
             return;
         }
-        // Get the Initial Angle value
+
+        // Get the Iterations value
         int iterationsValue;
         iterationsValue = (int)iterationSpinner.getValue();
 
@@ -365,8 +377,7 @@ public class Project2GUI extends JFrame implements ActionListener {
             return;
         }
 
-        // Get the origin start from the radio buttons,
-        //TODO Possible Window Resizing
+        // Get the origin position from the radio buttons,
         rootX = drawRootCorner.isSelected() ? 5   : 450;
         rootY = drawRootCenter.isSelected() ? 375 : 745;
 

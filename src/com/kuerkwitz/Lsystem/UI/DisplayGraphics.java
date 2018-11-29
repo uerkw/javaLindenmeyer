@@ -43,14 +43,20 @@ public class DisplayGraphics extends JPanel {
         // Loop through and draw every line
         if(drawingLines != null){
             int i = 0;
+
             for(Line2D.Double line : drawingLines){
+
                 if(Project2GUI.colorsCheckBox.isSelected()) {
                     Color drawColor = Color.GREEN;
+
                     int colorValue = Project2GUI.drawingColors.get(i);
+
                     if (colorValue < 10) drawColor = lineColor[colorValue];
+
                     g2.setColor(drawColor);
                 }
                 g2.draw(line);
+
                 i++;
             }
         }
