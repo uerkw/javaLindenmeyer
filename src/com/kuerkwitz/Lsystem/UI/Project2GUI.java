@@ -53,8 +53,9 @@ public class Project2GUI extends JFrame implements ActionListener {
     }
 
     /**
-     *
-     * @return
+     * The constructor to build the main GUI displayed inside of the JFrame. Sets up all
+     * fields, buttons, and the canvas.
+     * @return The JPanel containing all user interface elements.
      */
     private JPanel buildGUI() {
         // Create Master JPanel

@@ -10,7 +10,7 @@ import static com.kuerkwitz.Lsystem.UI.Project2GUI.drawingLines;
  * canvas repaint to clear any lines whenever the user desires.
  */
 public class ClearClickListener implements ActionListener {
-    DisplayGraphics canvas;
+    private DisplayGraphics canvas;
 
     /**
      * The constructor for when the "Clear" button is pressed.
@@ -32,15 +32,11 @@ public class ClearClickListener implements ActionListener {
         Project2GUI.drawingLines.clear();
         Project2GUI.drawingColors.clear();
         canvas.repaint();
-        //Empty Memory values to prevent problems
+        //Empty Memory values to prevent potential problems with large systems.
         if(drawingLines != null) {
             Project2GUI.drawingLines.clear();
             Project2GUI.drawingColors.clear();
         }
         System.gc();
-        /*JOptionPane.showMessageDialog(null,
-                "Canvas has been cleared.",
-                "Clear Button Clicked",
-                JOptionPane.WARNING_MESSAGE); */
     }
 }

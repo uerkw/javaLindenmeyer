@@ -3,7 +3,8 @@ package com.kuerkwitz.Lsystem.UI;
 /**
  * @author Kyle Uerkwitz
  * Takes the position values and angle of a point to keep track of a vector
- * in 2D Space
+ * in 2D Space. Contains variables for x coordinate, y coordinate, and angles
+ * along with getter methods..
  */
 class LineVector {
 

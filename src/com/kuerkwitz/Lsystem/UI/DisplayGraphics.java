@@ -7,8 +7,9 @@ import static com.kuerkwitz.Lsystem.UI.Project2GUI.drawingLines;
 
 /**
  * @author Kyle Uerkwitz
- * A canvas like class constructed from a JPanel to create lines on the GUI. Allows the use of colors by the
- * array initialized in the class itself.
+ * A canvas like class constructed from a JPanel to create lines on the GUI.
+ * Accesses the stored lines made by Project2GUI.
+ * Allows the use of colors by the array initialized in the class itself.
  */
 public class DisplayGraphics extends JPanel {
     private Color[] lineColor = new Color[10];
