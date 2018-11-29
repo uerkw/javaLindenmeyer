@@ -7,6 +7,7 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -168,6 +169,10 @@ public class Project2GUI extends JFrame implements ActionListener {
         return masterGUI;
     }
 
+    /**
+     * A method to quickly generate a new window with the default Java error symbol with a given message.
+     * @param message   String to be displayed by the error popup.
+     */
     private static void errorDialog(String message){
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -201,19 +206,31 @@ public class Project2GUI extends JFrame implements ActionListener {
      */
     private String expandRule(String initialString, int iterations, List<RuleSet> rules){
 
-        //TODO implement Queue instead of StringBuilder.
-        // Add initial string to queue
+        Queue<Character> expansionQueue = new LinkedList<Character>();
+
+
+        for(char character : initialString.toCharArray()){
+            expansionQueue.add(character);
+        }
 
         for(int i = 0; i < iterations; i++){
-            StringBuilder finalExpansion = new StringBuilder(); //TODO Not needed(?)
 
+            int queueSize = expansionQueue.size();
             try {
+
             mainLoop:
-            for(int j = 0; j < initialString.length(); j++){
-                char currentSymbol = initialString.charAt(j);
+
+            for(int j = 0; j < queueSize; j++){
+
+                char currentSymbol = expansionQueue.remove();
+
                 for(RuleSet rule : rules) {
+
                     if (rule.getVariable() == currentSymbol) {
-                        finalExpansion.append(rule.getRules()); //TODO Enqueue the rules
+
+                        for(char character: rule.getRules().toCharArray() ){
+                            expansionQueue.add(character);
+                        }
                         continue mainLoop;
                     }
                 }
@@ -223,19 +240,27 @@ public class Project2GUI extends JFrame implements ActionListener {
                     errorDialog("Expansion error. Start value or rules contain an undefined variable.");
                     return null;
                 }
-                    finalExpansion.append(currentSymbol);   //TODO Enqueue the currentSymbol
-                    //TODO Enqueue the '*' operator
+                    expansionQueue.add(currentSymbol);
                 }
+
             } catch(OutOfMemoryError outOfMemoryError){
+
                 // Handle if the user inputs too many iterations and the JAVA heap space limit is reached
-            finalExpansion = null;
-            errorDialog("Java could not allocate enough heap space to the expansion task. \n Please reduce " +
+
+                expansionQueue = null;
+
+                errorDialog("Java could not allocate enough heap space to the expansion task. \n Please reduce " +
                     "the iterations and try again.");
                 return null;
             }
-            initialString = finalExpansion.toString();      //TODO Don't return this value
         }
-        return initialString;   //TODO convert to queue for return.
+        StringBuilder stringBuild = new StringBuilder();
+        while(!expansionQueue.isEmpty()){
+            stringBuild.append(expansionQueue.remove());
+        }
+
+        return stringBuild.toString();
+
     }
 
     /**
