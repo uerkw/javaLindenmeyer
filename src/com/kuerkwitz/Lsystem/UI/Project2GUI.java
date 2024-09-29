@@ -69,6 +69,9 @@ public class Project2GUI extends JFrame implements ActionListener {
         // Setup Layout Managers
         BorderLayout masterLayoutManager = new BorderLayout(3, 0);
         masterGUI.setLayout(masterLayoutManager);
+        // Layout Manager for Buttons
+        BoxLayout layoutManagerButtons = new BoxLayout(ButtonsPane, BoxLayout.X_AXIS);
+        ButtonsPane.setLayout(layoutManagerButtons);
         // Layout Manager for Right Hand Side
         BoxLayout layoutManagerRight = new BoxLayout(RightMasterPane, BoxLayout.Y_AXIS);
         RightMasterPane.setLayout(layoutManagerRight);
